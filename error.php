@@ -16,4 +16,4 @@
 
 
 <?php
-json_encode($_SERVER);
+echo json_encode($_SERVER);
