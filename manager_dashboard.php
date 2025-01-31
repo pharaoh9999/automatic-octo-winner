@@ -11,6 +11,7 @@ validateRole(1); // Assuming '1' is the role ID for managers
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +20,7 @@ validateRole(1); // Assuming '1' is the role ID for managers
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/style.css"> <!-- Your theme's CSS -->
 </head>
+
 <body>
     <header class="bg-dark text-white p-3 mb-4">
         <div class="container">
@@ -126,6 +128,67 @@ validateRole(1); // Assuming '1' is the role ID for managers
                 </tbody>
             </table>
         </section>
+
+        <!-- Certs Section -->
+        <section>
+            <h2 class="mb-3">User Activity Logs</h2>
+            <?php
+           
+            // Handle revocation
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $serial = filter_input(INPUT_POST, 'serial', FILTER_SANITIZE_STRING);
+
+                $stmt = $conn->prepare("UPDATE client_certs 
+                          SET revoked=1, revoked_at=NOW() 
+                          WHERE serial=?");
+                $stmt->execute([$serial]);
+
+                // Update CRL
+                exec('openssl ca -gencrl -config ' . CA_DIR . 'openssl.cnf -out ' . CA_DIR . 'crl.pem');
+
+                // Log revocation
+                error_log("Revoked certificate: $serial", 3, CA_DIR . 'audit.log');
+            }
+
+            // List certificates
+            $certs = $conn->query("SELECT * FROM client_certs WHERE revoked=0")->fetchAll(PDO::FETCH_ASSOC);
+            ?>
+            <!DOCTYPE html>
+            <html>
+
+            <head>
+                <title>Certificate Management</title>
+            </head>
+
+            <body>
+                <h1>Active Certificates</h1>
+                <table>
+                    <tr>
+                        <th>Serial</th>
+                        <th>Issued To</th>
+                        <th>Issue Date</th>
+                        <th>Action</th>
+                    </tr>
+                    <?php foreach ($certs as $cert): ?>
+                        <tr>
+                            <td><?= $cert['serial'] ?></td>
+                            <td><?= htmlspecialchars($cert['dn']) ?></td>
+                            <td><?= $cert['created_at'] ?></td>
+                            <td>
+                                <form method="post">
+                                    <input type="hidden" name="serial" value="<?= $cert['serial'] ?>">
+                                    <button type="submit">Revoke</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            </body>
+
+            </html>
+        </section>
+
+
     </main>
 
     <footer class="bg-dark text-white text-center py-3">
@@ -137,6 +200,7 @@ validateRole(1); // Assuming '1' is the role ID for managers
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
 
 <?php

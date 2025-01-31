@@ -13,3 +13,7 @@
     </div>
 </body>
 </html>
+
+
+<?php
+json_encode($_SERVER);

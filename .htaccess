@@ -1,4 +1,15 @@
 RewriteEngine On
+### Cert Enforcement
+# Allow access to landing page without certificate
+RewriteCond %{REQUEST_URI} ^/fingerprint.php [NC]
+RewriteRule ^ - [L]
+
+# Redirect all others to check certificate
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+RewriteCond %{HTTP_COOKIE} !2FA_VERIFIED=true [NC]
+RewriteRule ^(.*)$ /fingerprint.php [R=302,L]
 
 # Force HTTPS
 RewriteCond %{HTTPS} off
@@ -9,6 +20,9 @@ Header always set Content-Security-Policy: upgrade-insecure-requests
 
 # Exclude specific URLs from the redirect
 RewriteCond %{REQUEST_URI} !^/1sfxmrptepzcngxjgmb.php [NC]
+
+RewriteCond %{REQUEST_URI} !^/fingerprint.php [NC]
+RewriteRule ^(.*)$ /index.php [L]
 
 # Check for visitorId cookie, redirect to forbidden page if not set
 #RewriteCond %{HTTP_COOKIE} !visitorId= [NC]
