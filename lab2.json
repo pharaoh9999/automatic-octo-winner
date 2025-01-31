@@ -1,0 +1,44 @@
+{
+  "status": true,
+  "data": [
+    {
+      "id": "867219",
+      "ID_Number": "10796530",
+      "Owner_Name": "FESTO MBOGO MUGO",
+      "passport_no": "",
+      "Pin": "A001887846Z",
+      "email_id": "",
+      "mobile_number": "+254723603974",
+      "vehicle_no": "KCH790X",
+      "vehicle_model": "SUBARU",
+      "Use": "S.WAGON",
+      "ntsa_id": "867219",
+      "purpose": "PRIVATE",
+      "capacity": "5",
+      "mechanical_data": {
+        "id": "720101",
+        "ChassisNo": "GH2-028463",
+        "yearOfManufacture": "2009",
+        "carMake": "SUBARU",
+        "carModel": "",
+        "regNo": "KCH790X",
+        "bodyType": "S.WAGON",
+        "logbookNumber": "{\"LOGBOOK_NUMBER\": \"N5511859G\", \"SERIAL_NO\": \"202210070853090\"}",
+        "registrationDate": "Wed Aug 31 00:00:00 EAT 2016",
+        "engineCapacity": "1490",
+        "passengerCapacity": "5",
+        "grossweight": "",
+        "tareweight": "1270",
+        "purpose": "PRIVATE",
+        "bodyColor": "DARK GREY",
+        "dutyStatus": "",
+        "dutyAmount": "369149",
+        "dutyDate": "",
+        "engineNumber": "EL15-D793035",
+        "ntsa_id": "867219",
+        "LOGBOOK_NUMBER": "N5511859G",
+        "SERIAL_NO": "202210070853090"
+      }
+    }
+  ]
+}

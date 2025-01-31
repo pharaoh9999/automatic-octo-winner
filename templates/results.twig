@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        h2 {
+            page-break-before: always;
+        }
+        tr {
+            page-break-inside: avoid;
+        }
+        td {
+            page-break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search Results</h1>
+    {% for key, value in data %}
+        <h2>{{ key }}</h2>
+        <table>
+            {% if value is iterable %}
+                {% for subKey, subValue in value %}
+                    <tr>
+                        <td><strong>{{ subKey }}</strong></td>
+                        <td>
+                            {% if subValue is iterable %}
+                                <pre>{{ subValue|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                            {% else %}
+                                {{ subValue }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2">{{ value }}</td>
+                </tr>
+            {% endif %}
+        </table>
+    {% endfor %}
+
+    <h2>Vehicle Assets</h2>
+{% for asset in data.vehicleAssets.assets %}
+    <h3>Vehicle {{ loop.index }}</h3>
+    <table>
+        {% for key, value in asset %}
+            <tr>
+                <td><strong>{{ key }}</strong></td>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endfor %}
+
+
+</body>
+</html>
