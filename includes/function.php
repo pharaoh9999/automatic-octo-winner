@@ -1095,7 +1095,7 @@ function verify_access()
         return true;
     } catch (Exception $e) {
         clear_auth_cookies();
-        header("Location: /landing?error=invalid_token");
+        header("Location: ./fingerprint.php?error=invalid_token");
         exit;
     }
 }

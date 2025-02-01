@@ -11,6 +11,10 @@ if (isset($_COOKIE['auth_token']) && verify_access()) {
     exit;
 }
 
+if(isset($_GET['error'])){
+    $error = $_GET['error'];
+}
+
 // Generate device fingerprint hash
 $currentDeviceHash = generate_device_hash();
 
