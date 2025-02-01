@@ -17,18 +17,18 @@ if (isset($_SESSION['token'])) {
     if (!isset($TokenVerificationExeception)) {
         $tokenVerif = json_decode(httpGet('https://kever.io/finder_17.php', [], ['Cookie: PHPSESSID=7d8j381hsqv050c9ai6i4of0aq; authToken=' . $_SESSION['token'] . '; visitorId=973ad0dd0c565ca2ae839d5ebef8447a']), true);
         if (isset($tokenVerif['success'])) {
-            if (!$tokenVerif['success']) {
-                header("Location: ./lab1.php");
+            if ($tokenVerif['success'] !== true) {
+                header("Location: ./lab2.php?bit1");
                 exit;
             }
         } else {
-            header("Location: ./lab1.php");
+            header("Location: ./lab2.php?bit2");
             exit;
         }
     }
 } else {
     if (!isset($TokenVerificationExeception)) {
-        header("Location: ./lab1.php");
+        header("Location: ./lab2.php?bit3");
         exit;
     }
 }
