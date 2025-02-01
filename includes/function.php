@@ -1,5 +1,11 @@
 <?php
-
+if (isset($_COOKIE['auth_token']) && verify_access()) {
+    header("Location: ./login.php");
+    //exit;
+}else{
+    header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
+    exit;
+}
 use simplehtmldom\HtmlDocument;
 
 require 'vendor/autoload.php';
@@ -8,10 +14,7 @@ session_start();
 
 $httpClient = new \simplehtmldom\HtmlWeb();
 
-if (isset($_COOKIE['auth_token']) && verify_access()) {
-    header("Location: ./login.php");
-    exit;
-}
+
 
 function scrape_2($data)
 {

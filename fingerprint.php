@@ -6,10 +6,10 @@ require './includes/function.php';
 use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 
 // Redirect if already authenticated
-// if (isset($_COOKIE['auth_token']) && verify_access()) {
-//     header("Location: ./login.php");
-//     exit;
-// }
+if (isset($_COOKIE['auth_token']) && verify_access()) {
+    header("Location: ./login.php");
+    exit;
+}
 
 // Generate device fingerprint hash
 $currentDeviceHash = generate_device_hash();
