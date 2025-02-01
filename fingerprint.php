@@ -24,55 +24,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['code'])) {
         $userPassword = $_SESSION['user_password'] = $_POST['password']; // From login
         $username = $_SESSION['user_name'] = $_POST['username'];
 
-        $apiResponse = login($username,$userPassword);
+        $apiResponse = login($username, $userPassword);
         if (isset($apiResponse['token'])) {
             $_SESSION['temp_secret'] = base64_decode($apiResponse['ga_secret']);
-        }else{
+
+            $stmt = $conn->prepare("SELECT * FROM users WHERE username = :username");
+            $stmt->execute(['username' => $username]);
+            $user = $stmt->fetch();
+
+            $_SESSION['role_id'] = $user['role_id'];
+            $_SESSION['user_id'] = $user['id'];
+
+            // Layer 1: System Key Encryption
+            $layer1 = openssl_encrypt(
+                $systemKey,
+                'aes-256-cbc',
+                $systemKey,
+                0,
+                str_repeat('0', 16)
+            );
+
+            // Layer 2: User Password Encryption
+            $layer2 = openssl_encrypt(
+                $layer1,
+                'aes-256-cbc',
+                hash('sha256', $userPassword),
+                0,
+                str_repeat('0', 16)
+            );
+
+            // Store system key reference
+            $stmt = $conn->prepare("REPLACE INTO security_files 
+            (user_id, device_hash, layer1_key) VALUES (?, ?, ?)");
+            $stmt->execute([
+                $_SESSION['user_id'],
+                $currentDeviceHash,
+                password_hash($systemKey, PASSWORD_DEFAULT)
+            ]);
+
+            // Output security file
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="security.safetoken"');
+            echo $layer2;
+            exit;
+        } else {
             //echo json_encode(['success' => false, 'redirect' => 'User not authorized for setup!']);
             $error = 'User not authorized for setup!';
-            exit; 
+            //exit;
         }
-
-
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = :username");
-        $stmt->execute(['username' => $username]);
-        $user = $stmt->fetch();
-
-        $_SESSION['role_id'] = $user['role_id'];
-        $_SESSION['user_id'] = $user['id'];
-
-        // Layer 1: System Key Encryption
-        $layer1 = openssl_encrypt(
-            $systemKey,
-            'aes-256-cbc',
-            $systemKey,
-            0,
-            str_repeat('0', 16)
-        );
-
-        // Layer 2: User Password Encryption
-        $layer2 = openssl_encrypt(
-            $layer1,
-            'aes-256-cbc',
-            hash('sha256', $userPassword),
-            0,
-            str_repeat('0', 16)
-        );
-
-        // Store system key reference
-        $stmt = $conn->prepare("REPLACE INTO security_files 
-            (user_id, device_hash, layer1_key) VALUES (?, ?, ?)");
-        $stmt->execute([
-            $_SESSION['user_id'],
-            $currentDeviceHash,
-            password_hash($systemKey, PASSWORD_DEFAULT)
-        ]);
-
-        // Output security file
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="security.safetoken"');
-        echo $layer2;
-        exit;
     } else {
         $error = "Invalid 2FA code";
     }
@@ -132,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['security_file'])) {
 
             header("Location: ./login.php");
             exit;
-        }else{
+        } else {
             $error = 'System Key Mismatch';
         }
     } catch (Exception $e) {
@@ -143,12 +142,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['security_file'])) {
 
 // Generate new 2FA secret if not exists
 if (!isset($_SESSION['temp_secret'])) {
-    $apiResponse = login('kever','24051786');
+    $apiResponse = login('kever', '24051786');
     if (isset($apiResponse['token'])) {
         $_SESSION['temp_secret'] = base64_decode($apiResponse['ga_secret']);
-    }else{
+    } else {
         echo json_encode(['success' => false, 'redirect' => 'User not authorized for setup!']);
-        exit; 
+        exit;
     }
 }
 ?>
