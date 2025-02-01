@@ -13,6 +13,17 @@ if (!isset($_COOKIE['auth_token']) && !verify_access($_SERVER['PHP_SELF'])) {
     }
 }
 
+$tokenVerif = json_decode(httpGet('https://kever.io/finder_17.php', [], ['Cookie: PHPSESSID=7d8j381hsqv050c9ai6i4of0aq; authToken=' . $_SESSION['token'] . '; visitorId=973ad0dd0c565ca2ae839d5ebef8447a']), true);
+if (isset($tokenVerif['success'])) {
+    if (!$tokenVerif['success']) {
+        header("Location: ./logout.php");
+        exit;
+    }
+} else {
+    header("Location: ./logout.php");
+    exit;
+}
+
 use simplehtmldom\HtmlDocument;
 
 require 'vendor/autoload.php';

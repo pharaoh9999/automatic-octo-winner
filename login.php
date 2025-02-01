@@ -62,7 +62,6 @@ use Sonata\GoogleAuthenticator\GoogleQrUrl;
 <body>
     <div class="container mt-5">
         <h2 class="text-center">Secure Cyber Login</h2>
-        <!-- <?= $_SERVER['HTTP_COOKIE'] ?> -->
         <form id="loginForm" method="POST">
             <div class="form-group">
                 <label for="username">Username</label>
