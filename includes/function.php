@@ -3,8 +3,10 @@ if (isset($_COOKIE['auth_token']) && verify_access()) {
     header("Location: ./login.php");
     //exit;
 }else{
-    header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
-    exit;
+    if ($_SERVER['PHP_SELF'] !== '/fingerprint.php') {
+        header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
+        exit;
+    }
 }
 use simplehtmldom\HtmlDocument;
 
