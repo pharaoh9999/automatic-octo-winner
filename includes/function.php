@@ -8,6 +8,11 @@ session_start();
 
 $httpClient = new \simplehtmldom\HtmlWeb();
 
+if (isset($_COOKIE['auth_token']) && verify_access()) {
+    header("Location: ./login.php");
+    exit;
+}
+
 function scrape_2($data)
 {
     $st2 = (new HtmlDocument())->load($data);
@@ -1033,4 +1038,84 @@ function advancedActivityLog($action, $response = '', $typeOverride = null)
 
     // Finally, call your existing activityLog() function
     activityLog($user_id, $action, $results, $logType);
+}
+
+function encrypt_token($data)
+{
+    $key = hash('sha256', $_SERVER['SERVER_NAME']);
+    $iv = openssl_random_pseudo_bytes(16);
+    return base64_encode($iv . openssl_encrypt($data, 'aes-256-cbc', $key, 0, $iv));
+}
+
+function decrypt_token($token)
+{
+    $data = base64_decode($token);
+    $iv = substr($data, 0, 16);
+    $key = hash('sha256', $_SERVER['SERVER_NAME']);
+    return openssl_decrypt(substr($data, 16), 'aes-256-cbc', $key, 0, $iv);
+}
+function generate_device_hash()
+{
+    $components = [
+        $_SERVER['HTTP_USER_AGENT'],
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'],
+        gethostname(),
+        $_SERVER['HTTP_ACCEPT_ENCODING']
+    ];
+    return hash('sha256', implode('|', $components));
+}
+
+// includes/auth_check.php
+function verify_access()
+{
+    global $conn;
+    if (!isset($_COOKIE['auth_token'])) {
+        header("Location: ./fingerprint.php");
+        exit;
+    }
+
+    try {
+        $systemKey = decrypt_token($_COOKIE['auth_token']);
+        $deviceHash = generate_device_hash();
+
+        $stmt = $conn->prepare("SELECT layer1_key FROM security_files 
+                              WHERE user_id = ? AND device_hash = ?");
+        $stmt->execute([$_SESSION['user_id'], $deviceHash]);
+        $storedKey = $stmt->fetchColumn();
+
+        if (!password_verify($systemKey, $storedKey)) {
+            throw new Exception("Key mismatch");
+        }
+
+        return true;
+    } catch (Exception $e) {
+        clear_auth_cookies();
+        header("Location: /landing?error=invalid_token");
+        exit;
+    }
+}
+
+function clear_auth_cookies()
+{
+    setcookie('auth_token', '', time() - 3600, '/');
+    setcookie('filePath', '', time() - 3600, '/');
+}
+
+function login($username,$password){
+      // Step 1: Authenticate username and password with the API
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, 'https://kever.io/finder_10_auth.php');
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_POST, true);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, [
+          'username' => $username,
+          'password' => $password,
+      ]);
+      curl_setopt($ch, CURLOPT_COOKIE, "visitorId=973ad0dd0c565ca2ae839d5ebef8447a");
+  
+      $response = curl_exec($ch);
+      $apiResponse = json_decode($response, true);
+      curl_close($ch);
+
+      return $apiResponse;
 }
