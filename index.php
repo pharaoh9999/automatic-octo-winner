@@ -1,5 +1,5 @@
 <?php
-
+require './includes/config.php'; // Include IP whitelisting from config.php
 require './includes/function.php'; // Include IP whitelisting from config.php
 
 // Check if the user is logged in

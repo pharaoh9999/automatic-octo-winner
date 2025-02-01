@@ -1,13 +1,16 @@
 <?php
-if (isset($_COOKIE['auth_token']) && verify_access()) {
-    header("Location: ./login.php");
+if (!isset($_COOKIE['auth_token']) && !verify_access()) {
+    //header("Location: ./login.php");
     //exit;
-}else{
-    if ($_SERVER['PHP_SELF'] !== '/fingerprint.php') {
+    if ($_SERVER['PHP_SELF'] !== '/fingerprint.php' && $_SERVER['PHP_SELF'] !== '/kestrel/fingerprint.php') {
         header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
         exit;
     }
+}elseif($_SERVER['PHP_SELF'] == '/kestrel/fingerprint.php' || $_SERVER['PHP_SELF'] == '/fingerprint.php'){
+    header("Location: ./login.php");
+    exit;
 }
+
 use simplehtmldom\HtmlDocument;
 
 require 'vendor/autoload.php';
@@ -1045,18 +1048,18 @@ function advancedActivityLog($action, $response = '', $typeOverride = null)
     activityLog($user_id, $action, $results, $logType);
 }
 
-function encrypt_token($data)
+function encrypt_token($data, $key='dElwIjoiMTk2LjIwMS4yMTguMTI2Iiwib3MiOiJXaW5kb3dzIDEwLjAiLCJzb3VyY2UiOiJNb')
 {
-    $key = hash('sha256', $_SERVER['SERVER_NAME']);
+    $key = hash('sha256', $key);
     $iv = openssl_random_pseudo_bytes(16);
     return base64_encode($iv . openssl_encrypt($data, 'aes-256-cbc', $key, 0, $iv));
 }
 
-function decrypt_token($token)
+function decrypt_token($token, $key='dElwIjoiMTk2LjIwMS4yMTguMTI2Iiwib3MiOiJXaW5kb3dzIDEwLjAiLCJzb3VyY2UiOiJNb')
 {
     $data = base64_decode($token);
     $iv = substr($data, 0, 16);
-    $key = hash('sha256', $_SERVER['SERVER_NAME']);
+    $key = hash('sha256', $key);
     return openssl_decrypt(substr($data, 16), 'aes-256-cbc', $key, 0, $iv);
 }
 function generate_device_hash()
@@ -1080,22 +1083,30 @@ function verify_access()
     }
 
     try {
-        $systemKey = decrypt_token($_COOKIE['auth_token']);
+        $systemKey = $_COOKIE['auth_token'];
         $deviceHash = generate_device_hash();
+        $authKey = decrypt_token($systemKey);
 
-        $stmt = $conn->prepare("SELECT layer1_key FROM security_files 
-                              WHERE user_id = ? AND device_hash = ?");
-        $stmt->execute([$_SESSION['user_id'], $deviceHash]);
+        $authKey = decrypt_token($systemKey);
+        $stmt = $conn->prepare("SELECT * FROM users WHERE systemKey = :systemKey");
+        $stmt->execute(['systemKey' => $authKey]);
+        $user = $stmt->fetch();
+
+
+        $stmt = $conn->prepare("SELECT layer1_key FROM security_files  WHERE user_id = ? AND device_hash = ? ORDER BY id DESC LIMIT 1");
+        $stmt->execute([$user['id'], $deviceHash]);
         $storedKey = $stmt->fetchColumn();
 
-        if (!password_verify($systemKey, $storedKey)) {
+
+        if ($authKey !== decrypt_token($storedKey)) {
             throw new Exception("Key mismatch");
+            //throw new Exception("Key mismatch t1:".$authKey.' t2:'.decrypt_token($storedKey));
         }
 
         return true;
     } catch (Exception $e) {
         clear_auth_cookies();
-        header("Location: ./fingerprint.php?error=invalid_token");
+        header("Location: ./fingerprint.php?error=".$e->getMessage());
         exit;
     }
 }
@@ -1106,21 +1117,22 @@ function clear_auth_cookies()
     setcookie('filePath', '', time() - 3600, '/');
 }
 
-function login($username,$password){
-      // Step 1: Authenticate username and password with the API
-      $ch = curl_init();
-      curl_setopt($ch, CURLOPT_URL, 'https://kever.io/finder_10_auth.php');
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_POST, true);
-      curl_setopt($ch, CURLOPT_POSTFIELDS, [
-          'username' => $username,
-          'password' => $password,
-      ]);
-      curl_setopt($ch, CURLOPT_COOKIE, "visitorId=973ad0dd0c565ca2ae839d5ebef8447a");
-  
-      $response = curl_exec($ch);
-      $apiResponse = json_decode($response, true);
-      curl_close($ch);
+function login($username, $password)
+{
+    // Step 1: Authenticate username and password with the API
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://kever.io/finder_10_auth.php');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, [
+        'username' => $username,
+        'password' => $password,
+    ]);
+    curl_setopt($ch, CURLOPT_COOKIE, "visitorId=973ad0dd0c565ca2ae839d5ebef8447a");
 
-      return $apiResponse;
+    $response = curl_exec($ch);
+    $apiResponse = json_decode($response, true);
+    curl_close($ch);
+
+    return $apiResponse;
 }

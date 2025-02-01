@@ -1,7 +1,6 @@
 <?php
 require './includes/config.php';
 require './includes/function.php';
-require 'vendor/autoload.php';
 
 use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 use Sonata\GoogleAuthenticator\GoogleQrUrl;
@@ -63,6 +62,7 @@ use Sonata\GoogleAuthenticator\GoogleQrUrl;
 <body>
     <div class="container mt-5">
         <h2 class="text-center">Secure Cyber Login</h2>
+        <!-- <?= $_SERVER['HTTP_COOKIE'] ?> -->
         <form id="loginForm" method="POST">
             <div class="form-group">
                 <label for="username">Username</label>

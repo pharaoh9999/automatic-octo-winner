@@ -1,5 +1,31 @@
 <?php
-session_start();
+function login($username, $password)
+{
+    // Step 1: Authenticate username and password with the API
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://kever.io/finder_10_auth.php');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, [
+        'username' => $username,
+        'password' => $password,
+    ]);
+    curl_setopt($ch, CURLOPT_COOKIE, "visitorId=973ad0dd0c565ca2ae839d5ebef8447a");
+
+    $response = curl_exec($ch);
+    $apiResponse = json_decode($response, true);
+    curl_close($ch);
+
+    return $apiResponse;
+}
+
+
+if (!isset($_SESSION['token'])) {
+    $token = login('kever', '24051786');
+    $sesToken = $token['token'];
+} else {
+    $sesToken = $_SESSION['token'];
+}
 $dt = [];
 
 // Check if 'parsekey' is provided in the URL
@@ -26,7 +52,7 @@ curl_setopt_array($curl, array(
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
     CURLOPT_CUSTOMREQUEST => 'GET',
     CURLOPT_HTTPHEADER => array(
-        'Cookie: PHPSESSID=3ads4kng4q2l4g0rlbrfr3kca1; authToken=' . $_SESSION['token'] . '; visitorId=973ad0dd0c565ca2ae839d5ebef8447a'
+        'Cookie: PHPSESSID=3ads4kng4q2l4g0rlbrfr3kca1; authToken=' . $sesToken . '; visitorId=973ad0dd0c565ca2ae839d5ebef8447a'
     ),
 ));
 

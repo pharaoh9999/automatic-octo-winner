@@ -47,7 +47,7 @@ $qrCodeDataUri = $result->getDataUri();
 
                     <div class="card">
                         <div class="card-body">
-                            <p>Scan the QR code below with the special app.</p>
+                            <p>Scan the QR code below with the Kestrel.</p>
                             <img src="<?php echo $qrCodeDataUri; ?>" alt="QR Code" class="mb-4 img-fluid">
                         </div>
                     </div>
