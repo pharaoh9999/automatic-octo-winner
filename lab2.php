@@ -10,4 +10,8 @@ require './includes/function.php'; // Include IP whitelisting from config.php
 
 $tokenVerif = json_decode(httpGet('https://kever.io/finder_17.php', [], ['Cookie: PHPSESSID=7d8j381hsqv050c9ai6i4of0aq; authToken=' . $_SESSION['token'] . '; visitorId=973ad0dd0c565ca2ae839d5ebef8447a']), true);
 
-    echo json_encode($tokenVerif);
+echo json_encode($tokenVerif) . '<br/>';
+
+if (isset($_GET['bit'])) {
+    echo $_GET['bit'];
+}
