@@ -6,9 +6,11 @@ if (!isset($_COOKIE['auth_token']) && !verify_access()) {
         header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
         exit;
     }
-}elseif($_SERVER['PHP_SELF'] == '/kestrel/fingerprint.php' || $_SERVER['PHP_SELF'] == '/fingerprint.php'){
-    header("Location: ./login.php");
-    exit;
+} elseif ($_SERVER['PHP_SELF'] == '/kestrel/fingerprint.php' || $_SERVER['PHP_SELF'] == '/fingerprint.php') {
+    if (isset($_COOKIE['auth_token']) && verify_access()) {
+        header("Location: ./login.php");
+        exit;
+    }
 }
 
 use simplehtmldom\HtmlDocument;
@@ -1078,7 +1080,9 @@ function verify_access()
 {
     global $conn;
     if (!isset($_COOKIE['auth_token'])) {
-        header("Location: ./fingerprint.php");
+        //header("Location: ./fingerprint.php");
+        header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
+        
         exit;
     }
 
@@ -1106,7 +1110,8 @@ function verify_access()
         return true;
     } catch (Exception $e) {
         clear_auth_cookies();
-        header("Location: ./fingerprint.php?error=".$e->getMessage());
+        //header("Location: ./fingerprint.php?error=".$e->getMessage());
+        header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
         exit;
     }
 }
