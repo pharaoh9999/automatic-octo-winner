@@ -1,5 +1,5 @@
 <?php
-
+require './includes/config.php';
 require './includes/function.php';
 
 require 'vendor/autoload.php';
