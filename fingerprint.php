@@ -28,7 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['code'])) {
         if (isset($apiResponse['token'])) {
             $_SESSION['temp_secret'] = base64_decode($apiResponse['ga_secret']);
         }else{
-            echo json_encode(['success' => false, 'redirect' => 'User not authorized for setup!']);
+            //echo json_encode(['success' => false, 'redirect' => 'User not authorized for setup!']);
+            $error = 'User not authorized for setup!';
             exit; 
         }
 
