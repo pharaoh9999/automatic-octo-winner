@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_id'] = $user['id'];
 
 
-        // Fetch ga_secret from API response
+        // Fetch ga_secret from API responsesd
         $ga_secret = base64_decode($apiResponse['ga_secret']); // Decoding if the API encoded it
         
         // Step 2: Verify that ga_secret exists

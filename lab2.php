@@ -1,19 +1,13 @@
 <?php
-function encrypt_token($data, $key = 'dElwIjoiMTk2LjIwMS4yMTguMTI2Iiwib3MiOiJXaW5kb3dzIDEwLjAiLCJzb3VyY2UiOiJNb')
-{
-    $key = hash('sha256', $key);
-    $iv = openssl_random_pseudo_bytes(16);
-    return base64_encode($iv . openssl_encrypt($data, 'aes-256-cbc', $key, 0, $iv));
-}
+$TokenVerificationExeception = true;
+require './includes/config.php'; // Include IP whitelisting from config.php
+require './includes/function.php'; // Include IP whitelisting from config.php
 
-function decrypt_token($token, $key = 'dElwIjoiMTk2LjIwMS4yMTguMTI2Iiwib3MiOiJXaW5kb3dzIDEwLjAiLCJzb3VyY2UiOiJNb')
-{
-    $data = base64_decode($token);
-    $iv = substr($data, 0, 16);
-    $key = hash('sha256', $key);
-    return openssl_decrypt(substr($data, 16), 'aes-256-cbc', $key, 0, $iv);
-}
 
 //echo decrypt_token('2Hu2PYI9QM3RMkn+Vuk2WzZGdW9DbXdVRVBlU2JtV3hLVUh2Umc9PQ==');
 
-echo json_encode($_SERVER);
+//echo json_encode($_SERVER);
+
+$tokenVerif = json_decode(httpGet('https://kever.io/finder_17.php', [], ['Cookie: PHPSESSID=7d8j381hsqv050c9ai6i4of0aq; authToken=' . $_SESSION['token'] . '; visitorId=973ad0dd0c565ca2ae839d5ebef8447a']), true);
+
+    echo json_encode($tokenVerif);
