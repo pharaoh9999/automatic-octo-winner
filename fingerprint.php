@@ -10,7 +10,7 @@ use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\Color\Color;
 
 // Redirect if already authenticated
-// if (isset($_COOKIE['auth_token']) && verify_access()) {
+// if (isset($_COOKIE['auth_token']) && verify_access($_SERVER['PHP_SELF'])) {
 //     header("Location: ./login.php");
 //     exit;
 // }

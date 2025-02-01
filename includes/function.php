@@ -1,5 +1,5 @@
 <?php
-if (!isset($_COOKIE['auth_token']) && !verify_access()) {
+if (!isset($_COOKIE['auth_token']) && !verify_access($_SERVER['PHP_SELF'])) {
     //header("Location: ./login.php");
     //exit;
     if ($_SERVER['PHP_SELF'] !== '/fingerprint.php' && $_SERVER['PHP_SELF'] !== '/kestrel/fingerprint.php') {
@@ -7,7 +7,7 @@ if (!isset($_COOKIE['auth_token']) && !verify_access()) {
         exit;
     }
 } elseif ($_SERVER['PHP_SELF'] == '/kestrel/fingerprint.php' || $_SERVER['PHP_SELF'] == '/fingerprint.php') {
-    if (isset($_COOKIE['auth_token']) && verify_access()) {
+    if (isset($_COOKIE['auth_token']) && verify_access($_SERVER['PHP_SELF'])) {
         header("Location: ./login.php");
         exit;
     }
@@ -1076,14 +1076,15 @@ function generate_device_hash()
 }
 
 // includes/auth_check.php
-function verify_access()
+function verify_access($page)
 {
     global $conn;
     if (!isset($_COOKIE['auth_token'])) {
         //header("Location: ./fingerprint.php");
-        header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
-        
-        exit;
+        if ($page !== '/fingerprint.php' && $page !== '/kestrel/fingerprint.php') {
+            header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
+            exit;
+        }
     }
 
     try {
@@ -1111,8 +1112,12 @@ function verify_access()
     } catch (Exception $e) {
         clear_auth_cookies();
         //header("Location: ./fingerprint.php?error=".$e->getMessage());
-        header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
-        exit;
+        if ($page !== '/fingerprint.php' && $page !== '/kestrel/fingerprint.php') {
+            header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
+            exit;
+        }else{
+            return true;
+        }
     }
 }
 
