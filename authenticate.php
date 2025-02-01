@@ -1,4 +1,5 @@
 <?php
+$TokenVerificationExeception = true;
 require 'vendor/autoload.php';
 use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 

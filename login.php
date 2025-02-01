@@ -1,4 +1,5 @@
 <?php
+$TokenVerificationExeception = true;
 require './includes/config.php';
 require './includes/function.php';
 
