@@ -1,6 +1,6 @@
 <?php
-session_start();
-include 'config.php'; // Include IP whitelisting from config.php
+
+require './includes/function.php'; // Include IP whitelisting from config.php
 
 // Check if the user is logged in
 if (!isset($_SESSION['token'])) {

@@ -1,6 +1,5 @@
 <?php
-session_start();
-
+require './includes/function.php';
 require 'vendor/autoload.php';
 
 use Sonata\GoogleAuthenticator\GoogleAuthenticator;

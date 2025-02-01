@@ -1,9 +1,9 @@
 <?php
-session_start();
 require 'vendor/autoload.php';
 use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 
 include 'includes/config.php';
+require './includes/function.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
