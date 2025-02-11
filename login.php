@@ -1,4 +1,8 @@
 <?php
+
+echo 'iiinn';
+exit;
+
 $TokenVerificationExeception = true;
 require './includes/config.php';
 require './includes/function.php';
