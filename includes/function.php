@@ -1105,8 +1105,9 @@ function verify_access($page)
     if (!isset($_COOKIE['auth_token'])) {
         //header("Location: ./fingerprint.php");
         if ($page !== '/fingerprint.php' && $page !== '/kestrel/fingerprint.php') {
-            header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business?err=p2");
-            exit;
+            //header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business?err=p2");
+            //exit;
+            return false;
         }
     }
 
