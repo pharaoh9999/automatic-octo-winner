@@ -10,7 +10,7 @@ if (!isset($_COOKIE['auth_token']) && !verify_access($_SERVER['PHP_SELF'])) {
         $query_str = 'null';
     }
     if ($_SERVER['SCRIPT_URL'] !== '/fingerprint.php' && $_SERVER['PHP_SELF'] !== '/kestrel/fingerprint.php') {
-        header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business?err=".$_SERVER['SCRIPT_URL']."&qr=".$query_str);
+        header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business?err=".$_SERVER['REQUEST_URI']);
         exit;
     }
 } elseif ($_SERVER['PHP_SELF'] == '/kestrel/fingerprint.php' || $_SERVER['PHP_SELF'] == '/fingerprint.php') {
