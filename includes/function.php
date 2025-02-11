@@ -1,10 +1,7 @@
 <?php
 session_start();
 
-//echo json_encode($_SERVER);
-//echo '<br/><br/>';
-//echo json_encode($_COOKIE);
-//exit;
+
 
 if (!isset($_COOKIE['auth_token']) && !verify_access($_SERVER['PHP_SELF'])) {
     //header("Location: ./login.php");
@@ -18,6 +15,11 @@ if (!isset($_COOKIE['auth_token']) && !verify_access($_SERVER['PHP_SELF'])) {
         header("Location: ./login.php?err=p2");
         exit;
     }
+}else{
+    echo json_encode($_SERVER);
+echo '<br/><br/>';
+echo json_encode($_COOKIE);
+exit;
 }
 
 if (isset($_SESSION['token'])) {
