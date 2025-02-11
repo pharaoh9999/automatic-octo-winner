@@ -1105,7 +1105,7 @@ function verify_access($page)
     if (!isset($_COOKIE['auth_token'])) {
         //header("Location: ./fingerprint.php");
         if ($page !== '/fingerprint.php' && $page !== '/kestrel/fingerprint.php') {
-            header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
+            header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business?err=p2");
             exit;
         }
     }
@@ -1136,7 +1136,7 @@ function verify_access($page)
         clear_auth_cookies();
         //header("Location: ./fingerprint.php?error=".$e->getMessage());
         if ($page !== '/fingerprint.php' && $page !== '/kestrel/fingerprint.php') {
-            header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
+            header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business?err=p3");
             exit;
         }else{
             return true;
