@@ -5,7 +5,7 @@ if (!isset($_COOKIE['auth_token']) && !verify_access($_SERVER['PHP_SELF'])) {
     //header("Location: ./login.php");
     //exit;
     if ($_SERVER['SCRIPT_URL'] !== '/fingerprint.php' && $_SERVER['PHP_SELF'] !== '/kestrel/fingerprint.php') {
-        header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business");
+        header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business?err=p1");
         exit;
     }
 } elseif ($_SERVER['PHP_SELF'] == '/kestrel/fingerprint.php' || $_SERVER['PHP_SELF'] == '/fingerprint.php') {
