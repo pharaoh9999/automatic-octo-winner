@@ -9,15 +9,25 @@ if (!isset($_COOKIE['auth_token']) && !verify_access($_SERVER['PHP_SELF'])) {
     if ($_SERVER['SCRIPT_URL'] !== '/fingerprint.php' && $_SERVER['PHP_SELF'] !== '/kestrel/fingerprint.php') {
         header("Location: https://en.wikipedia.org/wiki/Mind_your_own_business?err=".$_SERVER['REQUEST_URI']);
         exit;
+    }else{
+        echo json_encode($_SERVER);
+        echo '<br/>1<br/>';
+        echo json_encode($_COOKIE);
+        exit;
     }
 } elseif ($_SERVER['PHP_SELF'] == '/kestrel/fingerprint.php' || $_SERVER['PHP_SELF'] == '/fingerprint.php') {
     if (isset($_COOKIE['auth_token']) && verify_access($_SERVER['PHP_SELF'])) {
         header("Location: ./login.php?err=p2");
         exit;
+    }else{
+        echo json_encode($_SERVER);
+        echo '<br/>2<br/>';
+        echo json_encode($_COOKIE);
+        exit;
     }
 }else{
     echo json_encode($_SERVER);
-echo '<br/><br/>';
+echo '<br/>3<br/>';
 echo json_encode($_COOKIE);
 exit;
 }
