@@ -186,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['security_file'])) {
                             'samesite' => 'Strict'
                         ]);
 
-                        header("Location: ./login.php");
+                        header("Location: ./login.php?err=p1");
                         exit;
                     } else {
                         $error = 'System Key Mismatch t1:'.decrypt_token($systemKey).' t2:'.decrypt_token($storedKey);
