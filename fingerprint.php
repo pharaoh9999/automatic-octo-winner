@@ -1,5 +1,6 @@
 <?php
 //session_start();
+$TokenVerificationExeception = true;
 require './includes/config.php';
 require './includes/function.php';
 
