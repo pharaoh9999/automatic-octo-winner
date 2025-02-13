@@ -38,10 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $apiUrl = "https://nairobiservices.go.ke/api/external/brs?reg_no=" . urlencode($brsNumber);
         list($httpCode, $response) = callExternalApi($apiUrl, $headers);
     }
-
-    // Handle response
-    if ($httpCode === 200 && isset($response['data'])) {
-        // Log successful search
+    function logProcess($kraPin, $brsNumber, $response)
+    {
         $userId = $_SESSION['user_id']; // Replace with actual user ID from session or auth system
         $queryType = 'company_search';
         logSearch($userId, $queryType, $kraPin ?: $brsNumber, json_encode($response['data']));
@@ -51,11 +49,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $filePath = './temp/' . $objStr . '-ccs-' . bin2hex(random_bytes(10)) . '.pkestrel'; // Your custom file type
         createCustomFile($filePath, $finalObjData);
         $search = saveSearch($userId, $objStr, $filePath, $queryType);
+    }
+    // Handle response
+    if ($httpCode === 200 && isset($response['data'])) {
+        // Log successful search
 
+        logProcess($kraPin, $brsNumber, $response);
         // Return data
         echo json_encode(["status" => true, "data" => $response['data']]);
     } else {
-        echo json_encode(["status" => false, "message" => "No results found or API call failed."]);
+        if (!empty($kraPin)) {
+            // Search by KRA PIN
+            echo json_encode(["status" => false, "message" => "No results found or API call failed."]);
+        } elseif (!empty($brsNumber)) {
+            // Search by BRS Number
+            $url = 'https://payments.ecitizen.go.ke/api/business/lookup?registration_number=' . $brsNumber;
+            $dt1 = json_decode(httpPost($url, []), true);
+            if (isset($dt1['status'])) {
+                if ($dt1['status'] == 'ok') {
+                    logProcess($kraPin, $brsNumber, $dt1);
+                    echo json_encode(["status" => true, "data" => $dt1['business']]);
+                } else {
+                    if (isset($dt1['message'])) {
+                        echo json_encode(["status" => false, "message" => $dt1['message']]);
+                    } else {
+                        echo json_encode(["status" => false, "message" => "No results found or API call failed. 2"]);
+                    }
+                }
+            }
+        }
     }
 } else {
     echo json_encode(["status" => false, "message" => "Invalid request method."]);
