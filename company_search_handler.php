@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($dt1['status'])) {
                 if ($dt1['status'] == 'ok') {
                     logProcess($kraPin, $brsNumber, $dt1);
-                    echo json_encode(["status" => true, "data" => $dt1['business']]);
+                    echo json_encode(["status" => true, "data" => $dt1]);
                 } else {
                     if (isset($dt1['message'])) {
                         echo json_encode(["status" => false, "message" => $dt1['message']]);

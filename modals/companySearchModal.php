@@ -160,6 +160,47 @@
             `;
                             });
                         }
+                    } else if (company.business) {
+                        const record = company.business;
+
+                        // Add basic fields dynamically
+                        detailsHtml = `
+        <li class="list-group-item"><strong>Business Name:</strong> ${record.business_name || 'N/A'}</li>
+        <li class="list-group-item"><strong>Registration Number:</strong> ${record.registration_number || 'N/A'}</li>
+        <li class="list-group-item"><strong>Email:</strong> ${record.email || 'N/A'}</li>
+        <li class="list-group-item"><strong>Phone:</strong> ${record.phone_number || 'N/A'}</li>
+        <li class="list-group-item"><strong>Physical Address:</strong> ${record.physical_address || 'N/A'}</li>
+        <li class="list-group-item"><strong>Postal Address:</strong> ${record.postal_address || 'N/A'}</li>
+        <li class="list-group-item"><strong>Registration Date:</strong> ${record.registration_date || 'N/A'}</li>
+        <li class="list-group-item"><strong>Status:</strong> ${record.status || 'N/A'}</li>
+    `;
+
+                        // Add Share Capital (if available)
+                        if (record.share_capital?.length) {
+                            detailsHtml += '<h6 class="mt-3">Share Capital:</h6>';
+                            record.share_capital.forEach((capital, index) => {
+                                detailsHtml += `
+                <li class="list-group-item">#${index + 1} Shares: ${capital.number_of_shares || 'N/A'}, Value: ${capital.nominal_value || 'N/A'}, Type: ${capital.name || 'N/A'}</li>
+            `;
+                            });
+                        }
+
+                        // Add Partners (if available)
+                        if (record.partners?.length) {
+                            detailsHtml += '<h6 class="mt-3">Partners:</h6>';
+                            record.partners.forEach((partner, index) => {
+                                detailsHtml += `
+                <li class="list-group-item">
+                    #${index + 1} ${partner.type || 'Unknown'}: ${partner.name || 'N/A'} (${partner.id_type || 'N/A'} - ${partner.id_number || 'N/A'})
+                    <ul>
+                        ${partner.shares?.map((share, i) => `
+                            <li><strong>Share #${i + 1}:</strong> ${share.number_of_shares || 'N/A'} shares (${share.name || 'N/A'})</li>
+                        `).join('') || '<li>No shares listed</li>'}
+                    </ul>
+                </li>
+            `;
+                            });
+                        }
                     }
 
 
