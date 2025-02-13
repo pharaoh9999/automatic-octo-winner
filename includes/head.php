@@ -2,7 +2,7 @@
 require_once 'includes/config.php'; // Database connection
 require_once 'includes/function.php'; // Utility functions
 if (!isset($_SESSION['token'])) {
-    header("Location: login.php");
+    header("Location: login.php?err=head");
     exit();
 }
 ?>
